@@ -20,9 +20,11 @@
   - `Images` (썸네일 + 클릭 확대 모달 + 실패 플레이스홀더)
   - `image type(첫번째 사진 기준)` (`visual_type` 값 표시)
   - `Model Response` (`response`)
-  - `Model Answer` (`model_answer`)
+  - `Model Answer (Parsed Answer)` (`model_answer`)
 - 우측 annotation 폼
-  - 정답/오답 판정: `correct | incorrect | no_answer`
+  - 파싱 일치 검사: `match | mismatch | no_answer`
+  - 정답/오답 판정 1. (Model Response vs. Gold Answer): `correct | incorrect | no_answer`
+  - 정답/오답 판정 2. (Parsed Answer vs. Gold Answer): `correct | incorrect | no_answer`
   - 문제 유형 검사: `match | mismatch | unsure`
   - 이미지 타입 검사: `match | mismatch | unsure`
   - `Comment`
@@ -48,10 +50,13 @@
 
 ## 실행 방법
 
-1. 의존성 설치
-
 ```bash
-cd /Users/anjun-yeong/work/KMMMU/web
+git clone https://github.com/2nhyn/KMMMU_annotator
+```
+
+1. 의존성 설치
+```bash
+cd /경로/KMMMU_annotator/web
 npm install
 ```
 
@@ -69,9 +74,10 @@ npm run dev
 
 1. 앱 시작 후 데이터셋 카드에서 작업할 버전 선택
 2. 인덱스 탐색(`Go`, `<`, `>`)으로 문제 이동
-3. 라벨 3개(정답/오답, 문제 유형, 이미지 타입)와 코멘트 입력
-4. `Save Annotation` 클릭
-5. 필요 시 `Export CSV`로 병합 결과 저장
+3. 라벨 5개(파싱 일치, 정답/오답 검사 2개, 문제 유형, 이미지 타입)와 코멘트 입력 (필요 시)
+4. `Save Annotation` 클릭 (completed 문제가 업데이트됨)
+5. Next 클릭
+6. 마지막에 `Export CSV`로 병합 결과 저장
 
 ## 데이터/저장 관련 참고
 
