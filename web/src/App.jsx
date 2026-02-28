@@ -34,7 +34,9 @@ const DATASETS = [
 ];
 
 const EMPTY_FORM = {
-  human_judgement: "",
+  response_parse_check: "",      // ✅ 추가
+  parse_gold_compare: "",
+  response_gold_compare: "",     // ✅ 추가
   question_type_match: "",
   visual_type_check: "",
   comment: "",
@@ -221,7 +223,9 @@ function App() {
     }
 
     setForm({
-      human_judgement: currentAnnotation?.human_judgement ?? "",
+      response_parse_check: currentAnnotation?.response_parse_check ?? "",      // ✅
+      parse_gold_compare: currentAnnotation?.parse_gold_compare ?? "",
+      response_gold_compare: currentAnnotation?.response_gold_compare ?? "",    // ✅
       question_type_match: currentAnnotation?.question_type_match ?? "",
       visual_type_check: currentAnnotation?.visual_type_check ?? "",
       comment: currentAnnotation?.comment ?? "",
@@ -275,9 +279,11 @@ function App() {
     if (!currentRow) return;
 
     if (
-      !form.human_judgement ||
+      !form.parse_gold_compare ||
       !form.question_type_match ||
-      !form.visual_type_check
+      !form.visual_type_check ||
+      !form.response_parse_check ||  
+      !form.response_gold_compare    
     ) {
       setStatusMessage(
         "판정, 문제유형 검사, 이미지 타입 검사를 모두 선택해주세요.",
@@ -293,9 +299,11 @@ function App() {
     const next = {
       item_id: currentItemId,
       annotator_id: annotatorId,
-      human_judgement: form.human_judgement,
+      parse_gold_compare: form.parse_gold_compare,
       question_type_match: form.question_type_match,
       visual_type_check: form.visual_type_check,
+      response_parse_check: form.response_parse_check,        // ✅
+      response_gold_compare: form.response_gold_compare,      // ✅
       comment: form.comment,
       time_spent_sec: elapsedSec,
       updated_at: new Date().toISOString(),
@@ -477,9 +485,8 @@ function App() {
             <h3>Model Response</h3>
             <pre>{currentRow.response}</pre>
 
-            <p>
-              <strong>Model Answer:</strong> {currentRow.model_answer || "-"}
-            </p>
+            <h3>Model Answer (Parsed Answer)</h3>
+            <pre>{currentRow.model_answer || "-"}</pre>
           </div>
 
           <div className="right-panel">
@@ -489,17 +496,90 @@ function App() {
             </section>
 
             <section className="box">
-              <h3>정답/오답 판정</h3>
+              <h3>파싱 일치 검사</h3>
+              <p className="help-text">
+                Model Response와 Parsed Answer가 알맞게 매치되고 있는지 확인. <br></br>
+                📍파싱이 미흡할 경우=<b>mismatch</b> 📍Model Response가 완전하지 않은 경우=<b>no_answer</b>
+              </p>
               <div className="options">
                 <label>
                   <input
                     type="radio"
-                    name="human_judgement"
-                    checked={form.human_judgement === "correct"}
+                    name="response_parse_check"
+                    checked={form.response_parse_check === "match"}
+                    onChange={() => setForm((p) => ({ ...p, response_parse_check: "match" }))}
+                  />
+                  match
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="response_parse_check"
+                    checked={form.response_parse_check === "mismatch"}
+                    onChange={() => setForm((p) => ({ ...p, response_parse_check: "mismatch" }))}
+                  />
+                  mismatch
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="response_parse_check"
+                    checked={form.response_parse_check === "no_answer"}
+                    onChange={() => setForm((p) => ({ ...p, response_parse_check: "no_answer" }))}
+                  />
+                  no_answer
+                </label>
+              </div>
+            </section>
+
+            <section className="box">
+              <h3>정답/오답 판정 1. (Model Response vs. Gold Answer)</h3>
+              <p className="help-text">
+                Model Response 에서 내놓은 정답과 Gold Answer을 비교하여 채점.
+              </p>
+              <div className="options">
+                <label>
+                  <input
+                    type="radio"
+                    name="response_gold_compare"
+                    checked={form.response_gold_compare === "correct"}
+                    onChange={() => setForm((p) => ({ ...p, response_gold_compare: "correct" }))}
+                  />
+                  correct
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="response_gold_compare"
+                    checked={form.response_gold_compare === "incorrect"}
+                    onChange={() => setForm((p) => ({ ...p, response_gold_compare: "incorrect" }))}
+                  />
+                  incorrect
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="response_gold_compare"
+                    checked={form.response_gold_compare === "no_answer"}
+                    onChange={() => setForm((p) => ({ ...p, response_gold_compare: "no_answer" }))}
+                  />
+                  no_answer
+                </label>
+              </div>
+            </section>
+
+            <section className="box">
+              <h3>정답/오답 판정 2. (Parsed Answer vs. Gold Answer)</h3>
+              <div className="options">
+                <label>
+                  <input
+                    type="radio"
+                    name="parse_gold_compare"
+                    checked={form.parse_gold_compare === "correct"}
                     onChange={() =>
                       setForm((prev) => ({
                         ...prev,
-                        human_judgement: "correct",
+                        parse_gold_compare: "correct",
                       }))
                     }
                   />
@@ -508,12 +588,12 @@ function App() {
                 <label>
                   <input
                     type="radio"
-                    name="human_judgement"
-                    checked={form.human_judgement === "incorrect"}
+                    name="parse_gold_compare"
+                    checked={form.parse_gold_compare === "incorrect"}
                     onChange={() =>
                       setForm((prev) => ({
                         ...prev,
-                        human_judgement: "incorrect",
+                        parse_gold_compare: "incorrect",
                       }))
                     }
                   />
@@ -522,12 +602,12 @@ function App() {
                 <label>
                   <input
                     type="radio"
-                    name="human_judgement"
-                    checked={form.human_judgement === "no_answer"}
+                    name="parse_gold_compare"
+                    checked={form.parse_gold_compare === "no_answer"}
                     onChange={() =>
                       setForm((prev) => ({
                         ...prev,
-                        human_judgement: "no_answer",
+                        parse_gold_compare: "no_answer",
                       }))
                     }
                   />
@@ -647,7 +727,9 @@ function App() {
               <span>판정 시간</span>
               <strong>{formatElapsed(elapsedSeconds)}</strong>
             </section>
-
+            <p className="help-text">
+                <b>⚠️Save Annotation을 먼저 누르고 다음으로 넘어가세요.</b>
+            </p>
             <section className="actions">
               <button type="button" onClick={saveCurrentAnnotation}>
                 Save Annotation

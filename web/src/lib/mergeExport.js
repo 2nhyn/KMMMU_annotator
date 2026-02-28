@@ -22,9 +22,26 @@ export function mergeRowsByItemId(existingRows, currentRows) {
   return Array.from(merged.values())
 }
 
+const EXPORT_COLS = [
+  "item_id",
+  "annotator_id",
+  "response_parse_check",
+  "response_gold_compare",
+  "parse_gold_compare",
+  "question_type_match",
+  "visual_type_check",
+  "comment",
+  "time_spent_sec",
+  "updated_at",
+];
+
 export function toCsvText(rows) {
-  return Papa.unparse(rows)
+  return Papa.unparse(rows, { columns: EXPORT_COLS });
 }
+
+// export function toCsvText(rows) {
+//   return Papa.unparse(rows)
+// }
 
 export function downloadCsv(rows, fileName) {
   const csvText = toCsvText(rows)
