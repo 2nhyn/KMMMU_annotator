@@ -31,6 +31,19 @@ const DATASETS = [
     inputPath: "/input/varco2-14b-llm-judge.csv",
     outputPath: "/output/varco2-14b-annotations.csv",
   },
+
+  {
+    key: "qwen3-30b-think",
+    label: "qwen3-30b-think",
+    inputPath: "/input/qwen3-30b-think-sampled.csv",
+    outputPath: "/output/qwen3-30b-think-annotations.csv",
+  },
+  {
+    key: "qwen3-32b-think",
+    label: "qwen3-32b-think",
+    inputPath: "/input/qwen3-32b-think-sampled.csv",
+    outputPath: "/output/qwen3-32b-think-annotations.csv",
+  },
 ];
 
 const EMPTY_FORM = {
